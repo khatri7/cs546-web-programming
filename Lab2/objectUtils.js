@@ -26,8 +26,10 @@ const compareArrays = (arr1, arr2) => {
 };
 
 const deepEquality = (obj1, obj2) => {
+  if (obj1 === undefined || obj2 === undefined)
+    throw "Two objects should be provided as input parameters";
   if (!isValidObject(obj1) || !isValidObject(obj2))
-    throw "Input parameter should be objects";
+    throw "Input parameters should be objects";
   const obj1keys = Object.keys(obj1);
   const obj2keys = Object.keys(obj2);
   if (obj1keys.length !== obj2keys.length) return false;
@@ -49,10 +51,12 @@ const deepEquality = (obj1, obj2) => {
 };
 
 const commonKeysValues = (obj1, obj2) => {
+  if (obj1 === undefined || obj2 === undefined)
+    throw "Two objects should be provided as input parameters";
   if (!isValidObject(obj1) || !isValidObject(obj2))
     throw "Input parameter should be objects";
   let commonKeys = {};
-  const obj1keys = Object.keys(obj1).forEach((key) => {
+  Object.keys(obj1).forEach((key) => {
     if (
       obj1[key] === obj2[key] ||
       (Array.isArray(obj1[key]) &&
@@ -63,16 +67,17 @@ const commonKeysValues = (obj1, obj2) => {
         ...commonKeys,
         [key]: obj1[key],
       };
-    else if (
-      isValidObject(obj1[key]) &&
-      isValidObject(obj2[key]) &&
-      deepEquality(obj1[key], obj2[key])
-    )
+    else if (isValidObject(obj1[key]) && isValidObject(obj2[key])) {
+      if (deepEquality(obj1[key], obj2[key]))
+        commonKeys = {
+          ...commonKeys,
+          [key]: obj1[key],
+        };
       commonKeys = {
         ...commonKeys,
-        [key]: obj1[key],
         ...commonKeysValues(obj1[key], obj2[key]),
       };
+    }
   });
   return commonKeys;
 };
@@ -81,21 +86,19 @@ const calculateObject = (object, func) => {
   if (!isValidObject(object)) throw "First input parameter should be an object";
   if (typeof func !== "function")
     throw "Second input parameter should be a function";
-  Object.keys(object).forEach((key) => {
-    if (typeof object[key] !== "number")
+  const objKeys = Object.keys(object);
+  if (!objKeys.length)
+    throw "Object provided cannot be empty. Should have number values";
+  objKeys.forEach((key) => {
+    if (typeof object[key] !== "number" || !isFinite(object[key]))
       throw `Value of key ${key} in the object provided is not a number`;
     const funcResult = func(object[key]);
-    if (typeof funcResult !== "number")
+    if (typeof funcResult !== "number" || !isFinite(funcResult))
       throw "Function provided in input parameter should return a value of type number";
-    object[key] = Math.sqrt(funcResult).toFixed(2);
+    object[key] = parseFloat(Math.sqrt(funcResult).toFixed(2));
   });
   return object;
 };
-
-const first = { name: { first: "Patrick", last: "Hill" }, age: 46 };
-const second = { school: "Stevens", name: { first: "Patrick", last: "Hill" } };
-const third = { a: 2, b: { c: true, d: false } };
-const forth = { b: { c: true, d: false }, foo: "bar" };
 
 module.exports = {
   compareArrays,

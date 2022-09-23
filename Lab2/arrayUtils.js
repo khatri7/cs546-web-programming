@@ -42,7 +42,7 @@ const arrayStats = (array) => {
   isValidArray(array, true);
   let sum = 0;
   array.forEach((num, index) => {
-    if (typeof num !== "number")
+    if (typeof num !== "number" || !isFinite(num))
       throw `Value at index ${index} of array is not a number`;
     sum += num;
   });
@@ -134,14 +134,34 @@ const commonElements = (...arrays) => {
         }
         if (!foundInOtherArr) break;
       }
-      if (foundInOtherArr) commonElements.push(val);
-    } else
-      for (let i = 1; i < sortedArgs.length; i++) {
-        if (!sortedArgs[i].includes(val)) continue;
-        if (!commonElements.includes(val)) commonElements.push(val);
+      if (foundInOtherArr) {
+        if (
+          !commonElements
+            .map((commonElement) => {
+              if (
+                Array.isArray(commonElement) &&
+                compareArrays(commonElement, val)
+              )
+                return true;
+              return false;
+            })
+            .includes(true)
+        )
+          commonElements.push(val);
       }
+    } else {
+      let foundInOtherArr = false;
+      for (let i = 1; i < sortedArgs.length; i++) {
+        if (sortedArgs[i].includes(val)) foundInOtherArr = true;
+        else {
+          foundInOtherArr = false;
+          break;
+        }
+      }
+      if (foundInOtherArr && !commonElements.includes(val))
+        commonElements.push(val);
+    }
   });
-
   return commonElements;
 };
 

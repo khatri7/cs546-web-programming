@@ -41,7 +41,8 @@ const palindromes = (string) => {
   const palindromeWords = [];
   string.split(" ").forEach((word) => {
     const cleanedWord = cleanWord(word);
-    if (isWordPalindrome(cleanedWord)) palindromeWords.push(cleanedWord);
+    if (cleanedWord.length > 1 && isWordPalindrome(cleanedWord))
+      palindromeWords.push(cleanedWord);
   });
   return palindromeWords;
 };
@@ -74,8 +75,6 @@ const charSwap = (string1, string2) => {
     4
   )}${string2.slice(4)}`;
 };
-
-console.log(palindromes("Wow! Did you 212 see that racecar go?"));
 
 module.exports = {
   palindromes,
