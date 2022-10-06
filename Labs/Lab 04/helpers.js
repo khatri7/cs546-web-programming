@@ -1,4 +1,4 @@
-//You can add and export any helper functions you want here. If you aren't using any, then you can just leave this file as is.
+const { ObjectId } = require("mongodb");
 
 // list of valid ratings
 const validRatings = ["G", "PG", "PG-13", "R", "NC-17"];
@@ -77,7 +77,7 @@ const isValidObj = (obj) =>
  * @returns title after trimming if it is a valid title otherwise throws an error
  */
 const isValidMovieTitle = (title) => {
-  title = isValidStr(title, "title", "min", 2);
+  title = isValidStr(title, "Title", "min", 2);
   title
     .toLowerCase()
     .split("")
@@ -205,9 +205,7 @@ const isValidReleaseDate = (date) => {
 
 const isValidRuntime = (runtime) => {
   runtime = isValidStr(runtime, "runtime");
-  const split = ([hString, mString, ...rest] = runtime
-    .split(" ")
-    .filter((ele) => ele !== ""));
+  const split = ([hString, mString, ...rest] = runtime.split(" "));
   if (split.length > 2 || !hString.endsWith("h") || !mString.endsWith("min"))
     throw "Invalid runtime";
   const hSplit = ([hours, ...rest] = hString.split("h"));
@@ -270,8 +268,14 @@ const isValidMovieObject = (obj) => {
   };
 };
 
-console.log(isValidRuntime("2h  30mins"));
+const isValidObjectId = (id) => {
+  id = isValidStr(id, "Id");
+  if (!ObjectId.isValid(id)) throw "Invalid Object Id";
+  return ObjectId(id);
+};
 
 module.exports = {
   isValidMovieObject,
+  isValidObjectId,
+  isValidMovieTitle,
 };

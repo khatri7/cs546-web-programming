@@ -22,11 +22,26 @@ const movies = require("./data/movies");
 */
 
 const main = async () => {
-  await movies.createMovie();
-  const res = await movies.getAllMovies();
-  console.log(res);
-
-  await closeConnection();
+  try {
+    try {
+      const hackers = await movies.createMovie(
+        "Hackers",
+        "Hackers are blamed for making a virus that will capsize five oil tankers.",
+        ["Crime", "Drama", "Romance"],
+        "PG-13",
+        "United Artists",
+        "Iain Softley",
+        ["Jonny Miller", "Angelina Jolie", "Matthew Lillard", "Fisher Stevens"],
+        "09/15/1995",
+        "1h 45min"
+      );
+      console.log(hackers);
+    } catch (e) {
+      console.log(e);
+    }
+  } finally {
+    await closeConnection();
+  }
 };
 
 main();
