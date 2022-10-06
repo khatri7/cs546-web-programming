@@ -76,6 +76,8 @@ const charSwap = (string1, string2) => {
   )}${string2.slice(4)}`;
 };
 
+console.log(charSwap("   four   ", "   lett"));
+
 module.exports = {
   palindromes,
   replaceChar,

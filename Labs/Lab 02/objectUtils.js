@@ -100,6 +100,29 @@ const calculateObject = (object, func) => {
   return object;
 };
 
+console.log(
+  deepEquality(
+    {
+      b: 2,
+      a: 2,
+      c: {
+        d: [1, 2, 3, { z: true, y: false }],
+        e: NaN,
+        f: { g: undefined, h: {} },
+      },
+    },
+    {
+      a: 2,
+      c: {
+        f: { h: {}, g: undefined },
+        e: NaN,
+        d: [1, 2, 3, { z: true, y: false }],
+      },
+      b: 2,
+    }
+  )
+);
+
 module.exports = {
   compareArrays,
   deepEquality,
