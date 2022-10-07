@@ -5,6 +5,20 @@ const validRatings = ["G", "PG", "PG-13", "R", "NC-17"];
 
 /**
  *
+ * @param {string} char
+ * @returns {boolean} if the character provided is a lower case letter
+ */
+const isLetterChar = (char) => char >= "a" && char <= "z";
+
+/**
+ *
+ * @param {string} char
+ * @returns {boolean} if the character provided is a number
+ */
+const isNumberChar = (char) => char >= "0" && char <= "9";
+
+/**
+ *
  * @param {string} str
  * @param {string} varName
  * @param {("min" | "max" | "equal")} compareOp
@@ -68,13 +82,18 @@ const isValidArray = (arr, arrName, compareOp, compareVal) => {
   }
 };
 
+/**
+ *
+ * @param {object} obj
+ * @returns {boolean} if the object provided is a valid object
+ */
 const isValidObj = (obj) =>
   obj !== null && typeof obj === "object" && !Array.isArray(obj);
 
 /**
  *
  * @param {string} title
- * @returns title after trimming if it is a valid title otherwise throws an error
+ * @returns {string} title after trimming if it is a valid title otherwise throws an error
  */
 const isValidMovieTitle = (title) => {
   title = isValidStr(title, "Title", "min", 2);
@@ -82,8 +101,9 @@ const isValidMovieTitle = (title) => {
     .toLowerCase()
     .split("")
     .forEach((char) => {
-      if (char < "a" && char > "z" && char < "0" && char > "9" && char !== " ")
-        throw "The title provided is invalid";
+      if (!isLetterChar(char) && !isNumberChar(char) && char !== " ") {
+        throw "Provided title is not valid";
+      }
     });
   return title;
 };
@@ -91,7 +111,7 @@ const isValidMovieTitle = (title) => {
 /**
  *
  * @param {string} rating
- * @returns rating after trimming if it is a valid rating otherwise throws an error
+ * @returns {string} rating after trimming if it is a valid rating otherwise throws an error
  */
 const isValidRating = (rating) => {
   rating = isValidStr(rating, "rating");
@@ -103,16 +123,16 @@ const isValidRating = (rating) => {
 /**
  *
  * @param {string} studio
- * @returns studio after trimming if it is a valid studio otherwise throws an error
+ * @returns {string} studio after trimming if it is a valid studio otherwise throws an error
  */
 const isValidStudio = (studio) => {
-  studio = isValidStr(studio, "studio", "min", 5);
+  studio = isValidStr(studio, "Studio", "min", 5);
   studio
     .toLowerCase()
     .split("")
     .forEach((char) => {
-      if (char < "a" && char > "z" && ![" ", "'", "."].includes(char))
-        throw "The title should not consist of any special characters";
+      if (!isLetterChar(char) && ![" ", ".", "'", "-"].includes(char))
+        throw "The studio name should not consist of numbers or special characters";
     });
   return studio;
 };
@@ -120,9 +140,11 @@ const isValidStudio = (studio) => {
 /**
  *
  * @param {string} name
- * @returns name after trimming if it is a valid director name otherwise throws an error
+ * @param {string} varName
+ * @param {boolean} allowPunctuations
+ * @returns {string} name after trimming if it is a valid director name otherwise throws an error
  */
-const isValidName = (name, varName) => {
+const isValidName = (name, varName, allowPunctuations = false) => {
   name = isValidStr(name, varName);
   const split = ([firstName, lastName, ...rest] = name.split(" "));
   if (split.length > 2) throw `Invalid ${varName} name`;
@@ -136,8 +158,12 @@ const isValidName = (name, varName) => {
     .toLowerCase()
     .split("")
     .forEach((char) => {
-      if (char < "a" && char > "z" && ![" ", "'", "."].includes(char))
-        throw `The ${varName} name should not consist of any special characters`;
+      if (
+        !isLetterChar(char) &&
+        char !== " " &&
+        !(allowPunctuations && ["'", ".", "-"].includes(char))
+      )
+        throw `The ${varName} name should not consist of numbers or any special characters`;
     });
   return cleanName;
 };
@@ -145,24 +171,24 @@ const isValidName = (name, varName) => {
 /**
  *
  * @param {string} name
- * @returns director name after trimming if it is a valid director name otherwise throws an error
+ * @returns {string} director name after trimming if it is a valid director name otherwise throws an error
  */
 const isValidDirector = (name) => isValidName(name, "Director");
 
 /**
  *
  * @param {string[]} genres
- * @returns genres after trimming each genre if all elements are valid genre
+ * @returns {string[]} genres after trimming each genre if all elements are valid genre
  */
 const isValidGenres = (genres) => {
   isValidArray(genres, "Genres", "min", 1);
-  genres.map((genre, index) => {
+  genres = genres.map((genre, index) => {
     genre = isValidStr(genre, `Genre at index ${index}`, "min", 5);
     genre
       .toLowerCase()
-      .split()
+      .split("")
       .forEach((char) => {
-        if (char < "a" && char > "z" && char !== " ")
+        if (!isLetterChar(char) && char !== " ")
           throw `Genre at index ${index} is not a valid genre`;
       });
     return genre;
@@ -170,17 +196,31 @@ const isValidGenres = (genres) => {
   return genres;
 };
 
+/**
+ *
+ * @param {string[]} castMembers
+ * @returns {string[]} cast members after validating each element
+ */
 const isValidCastMembers = (castMembers) => {
   isValidArray(castMembers, "Cast Members", "min", 1);
-  castMembers.map((member, index) =>
-    isValidName(member, `Cast at index ${index}`)
+  castMembers = castMembers.map((member, index) =>
+    isValidName(member, `Cast at index ${index}`, true)
   );
   return castMembers;
 };
 
+/**
+ *
+ * @param {string} date in format mm/dd/yyyy
+ * @returns {string} date string if it is valid otherwise throws an error
+ */
 const isValidReleaseDate = (date) => {
   date = isValidStr(date, "Release Date");
+  for (char of date)
+    if (!isNumberChar(char) && char !== "/") throw "Invalid release date";
   let [month, day, year] = date.split("/");
+  if (month.length !== 2 || day.length !== 2 || year.length !== 4)
+    throw "Invalid release date";
   year = parseInt(year.trim(), 10);
   month = parseInt(month.trim(), 10);
   day = parseInt(day.trim(), 10);
@@ -203,6 +243,11 @@ const isValidReleaseDate = (date) => {
     .padStart(2, "0")}/${year.toString()}`;
 };
 
+/**
+ *
+ * @param {string} runtime
+ * @returns {string} runtime if it is valid otherwise throws an error
+ */
 const isValidRuntime = (runtime) => {
   runtime = isValidStr(runtime, "runtime");
   const split = ([hString, mString, ...rest] = runtime.split(" "));
@@ -210,13 +255,17 @@ const isValidRuntime = (runtime) => {
     throw "Invalid runtime";
   const hSplit = ([hours, ...rest] = hString.split("h"));
   const mSplit = ([mins, ...rest] = mString.split("min"));
+  if (hSplit.length > 2 || mSplit > 2 || hSplit[1] !== "" || mSplit[1] !== "")
+    throw "Invalid runtime";
+  for (let char of hours) if (!isNumberChar(char)) throw "Invalid runtime";
+  for (let char of mins) if (!isNumberChar(char)) throw "Invalid runtime";
   hours = parseFloat(hours, 10);
   mins = parseFloat(mins, 10);
   if (
     !isFinite(hours) ||
     !isFinite(mins) ||
     hours < 1 ||
-    mins < 1 ||
+    mins < 0 ||
     mins > 59 ||
     hours % 1 !== 0 ||
     mins % 1 !== 0
@@ -228,7 +277,7 @@ const isValidRuntime = (runtime) => {
 /**
  *
  * @param {object} obj
- * @returns movie object after trimming wherever needed otherwise throws an error if any of the properties is missing of invalid
+ * @returns {object} movie object after trimming wherever needed otherwise throws an error if any of the properties is missing of invalid
  */
 const isValidMovieObject = (obj) => {
   if (!isValidObj) throw "Movie object provided is not a valid object";
@@ -244,7 +293,7 @@ const isValidMovieObject = (obj) => {
     runtime,
   } = obj;
   title = isValidMovieTitle(title);
-  plot = isValidStr(plot, "plot");
+  plot = isValidStr(plot, "Plot");
   genres = isValidGenres(genres);
   rating = isValidRating(rating);
   studio = isValidStudio(studio);
@@ -268,6 +317,11 @@ const isValidMovieObject = (obj) => {
   };
 };
 
+/**
+ *
+ * @param {string} id
+ * @returns {ObjectId} the object id if it is valid otherwise throws an error
+ */
 const isValidObjectId = (id) => {
   id = isValidStr(id, "Id");
   if (!ObjectId.isValid(id)) throw "Invalid Object Id";

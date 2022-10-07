@@ -38,7 +38,6 @@ const createMovie = async (
 const getAllMovies = async () => {
   const moviesCollection = await movies();
   const moviesList = await moviesCollection.find({}).toArray();
-  if (!moviesList?.length) throw "Could not get movies";
   return moviesList.map((movie) => ({
     ...movie,
     _id: movie._id.toString(),

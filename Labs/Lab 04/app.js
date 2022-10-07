@@ -1,4 +1,4 @@
-const { closeConnection } = require("./config/mongoConnection");
+const { closeConnection, dbConnection } = require("./config/mongoConnection");
 const movies = require("./data/movies");
 
 /*
@@ -22,26 +22,146 @@ const movies = require("./data/movies");
 */
 
 const main = async () => {
+  const db = await dbConnection();
+  await db.dropDatabase();
+
+  let movie1, movie2, movie3;
+
+  // 1
+  // 2
   try {
-    try {
-      const hackers = await movies.createMovie(
-        "Hackers",
-        "Hackers are blamed for making a virus that will capsize five oil tankers.",
-        ["Crime", "Drama", "Romance"],
-        "PG-13",
-        "United Artists",
-        "Iain Softley",
-        ["Jonny Miller", "Angelina Jolie", "Matthew Lillard", "Fisher Stevens"],
-        "09/15/1995",
-        "1h 45min"
-      );
-      console.log(hackers);
-    } catch (e) {
-      console.log(e);
-    }
-  } finally {
-    await closeConnection();
+    movie1 = await movies.createMovie(
+      "Hackers",
+      "Hackers are blamed for making a virus that will capsize five oil tankers.",
+      ["Crime", "Drama", "Romance"],
+      "PG-13",
+      "United Artists",
+      "Iain Softley",
+      ["Jonny Miller", "Angelina Jolie", "Matthew Lillard", "Fisher Stevens"],
+      "09/15/1995",
+      "1h 45min"
+    );
+    console.log(movie1);
+  } catch (e) {
+    console.log(e);
   }
+
+  // 3
+  try {
+    movie2 = await movies.createMovie(
+      "Demo movie",
+      "Demo movie plot.",
+      ["Crime"],
+      "PG-13",
+      "United Artists",
+      "Iain Softley",
+      ["Jonny Miller", "Angelina Jolie", "Matthew Lillard", "Fisher Stevens"],
+      "09/15/1995",
+      "2h 30min"
+    );
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 4
+  try {
+    const allMovies = await movies.getAllMovies();
+    console.log(allMovies);
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 5
+  // 6
+  try {
+    movie3 = await movies.createMovie(
+      "Demo movie 2",
+      "Demo movie 2 plot.",
+      ["Romance"],
+      "PG-13",
+      "United Artists",
+      "Iain Softley",
+      ["Jonny Miller", "Angelina Jolie", "Matthew Lillard", "Fisher Stevens"],
+      "09/15/1995",
+      "1h 45min"
+    );
+    console.log(movie3);
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 7
+  // 8
+  try {
+    movie1 = await movies.renameMovie(movie1._id, "Hacker Returns");
+    console.log(movie1);
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 9
+  try {
+    await movies.removeMovie(movie2._id);
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 10
+  try {
+    const allMovies = await movies.getAllMovies();
+    console.log(allMovies);
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 11
+  try {
+    const hacker = await movies.createMovie(
+      "Hackers",
+      "Hackers are blamed for making a virus that will capsize five oil tankers.",
+      ["Crime", "Drama", "Romance"],
+      "PG-13",
+      "United Artists",
+      "Iain Softley",
+      ["Jonny Miller", "Angelina Jolie", "Matthew Lillard", "Fisher Stevens"],
+      "09/15/1895",
+      "1h 45min"
+    );
+    console.log(hacker);
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 12
+  try {
+    await movies.removeMovie(movie2._id);
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 13
+  try {
+    await movies.renameMovie(movie2._id, "New demo title");
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 14
+  try {
+    movie3 = await movies.renameMovie(movie3._id, "This is an invalid title!!");
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 15
+  try {
+    const data = await movies.getMovieById(movie2._id);
+    console.log(data);
+  } catch (e) {
+    console.log(e);
+  }
+
+  await closeConnection();
 };
 
 main();
