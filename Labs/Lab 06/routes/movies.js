@@ -1,4 +1,3 @@
-//require express and express router as shown in lecture code
 const express = require("express");
 const { moviesData } = require("../data");
 
@@ -13,16 +12,57 @@ router
     } catch (e) {}
   })
   .post(async (req, res) => {
-    //code here for POST
+    try {
+      const {
+        title,
+        plot,
+        genres,
+        rating,
+        studio,
+        director,
+        castMembers,
+        dateReleased,
+        runtime,
+      } = req.body;
+      const movie = await moviesData.createMovie(
+        title,
+        plot,
+        genres,
+        rating,
+        studio,
+        director,
+        castMembers,
+        dateReleased,
+        runtime
+      );
+      res.status(201).json(movie);
+    } catch (e) {
+      if (e.response && e.response.statusCode && e.response.statusCode)
+        res
+          .status(e.response.statusCode)
+          .json({ error: e.response.statusText });
+      else res.status(500);
+    }
   });
 
 router
   .route("/:movieId")
   .get(async (req, res) => {
-    //code here for GET
+    try {
+      // TODO: check if id is valid
+      const movie = await moviesData.getMovieById(req.params.movieId);
+      res.json(movie);
+    } catch (e) {
+      res.status(404).json({ error: "Not Found" });
+    }
   })
   .delete(async (req, res) => {
-    //code here for DELETE
+    try {
+      const response = await moviesData.removeMovie(req.params.movieId);
+      res.json(response);
+    } catch (e) {
+      res.status(404).json({ error: "Not Found" });
+    }
   })
   .put(async (req, res) => {
     //code here for PUT

@@ -291,6 +291,8 @@ const isValidMovieObject = (obj) => {
     castMembers,
     dateReleased,
     runtime,
+    reviews,
+    overallRating,
   } = obj;
   title = isValidMovieTitle(title);
   plot = isValidStr(plot, "Plot");
@@ -302,7 +304,7 @@ const isValidMovieObject = (obj) => {
   dateReleased = isValidReleaseDate(dateReleased);
   runtime = isValidRuntime(runtime);
   const objKeys = Object.keys(obj);
-  if (objKeys.length > 9)
+  if (objKeys.length > 11)
     throw "Object has extra keys. It does not follow the movie schema";
   return {
     title,
@@ -314,6 +316,8 @@ const isValidMovieObject = (obj) => {
     castMembers,
     dateReleased,
     runtime,
+    reviews: reviews ? reviews : [],
+    overallRating: overallRating ? overallRating : 0,
   };
 };
 
@@ -328,8 +332,20 @@ const isValidObjectId = (id) => {
   return ObjectId(id);
 };
 
+const isValidReviewObject = (obj) => {
+  const { reviewTitle, reviewerName, review, rating } = obj;
+  return {
+    _id: ObjectId(),
+    reviewTitle,
+    reviewerName,
+    review,
+    rating,
+  };
+};
+
 module.exports = {
   isValidMovieObject,
   isValidObjectId,
   isValidMovieTitle,
+  isValidReviewObject,
 };
