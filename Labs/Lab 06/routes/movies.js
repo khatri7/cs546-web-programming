@@ -1,5 +1,6 @@
 const express = require("express");
 const { moviesData } = require("../data");
+const { sendErrResp } = require("../helpers");
 
 const router = express.Router();
 
@@ -9,7 +10,9 @@ router
     try {
       const movies = await moviesData.getAllMovies();
       res.json(movies);
-    } catch (e) {}
+    } catch (e) {
+      sendErrResp(res, e);
+    }
   })
   .post(async (req, res) => {
     try {
@@ -35,13 +38,9 @@ router
         dateReleased,
         runtime
       );
-      res.status(201).json(movie);
+      res.json(movie);
     } catch (e) {
-      if (e.response && e.response.statusCode && e.response.statusCode)
-        res
-          .status(e.response.statusCode)
-          .json({ error: e.response.statusText });
-      else res.status(500);
+      sendErrResp(res, e);
     }
   });
 
@@ -49,11 +48,10 @@ router
   .route("/:movieId")
   .get(async (req, res) => {
     try {
-      // TODO: check if id is valid
       const movie = await moviesData.getMovieById(req.params.movieId);
       res.json(movie);
     } catch (e) {
-      res.status(404).json({ error: "Not Found" });
+      sendErrResp(res, e);
     }
   })
   .delete(async (req, res) => {
@@ -61,11 +59,38 @@ router
       const response = await moviesData.removeMovie(req.params.movieId);
       res.json(response);
     } catch (e) {
-      res.status(404).json({ error: "Not Found" });
+      sendErrResp(res, e);
     }
   })
   .put(async (req, res) => {
-    //code here for PUT
+    try {
+      const {
+        title,
+        plot,
+        genres,
+        rating,
+        studio,
+        director,
+        castMembers,
+        dateReleased,
+        runtime,
+      } = req.body;
+      const movie = await moviesData.updateMovie(
+        req.params.movieId,
+        title,
+        plot,
+        genres,
+        rating,
+        studio,
+        director,
+        castMembers,
+        dateReleased,
+        runtime
+      );
+      res.json(movie);
+    } catch (e) {
+      sendErrResp(res, e);
+    }
   });
 
 module.exports = router;

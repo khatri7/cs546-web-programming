@@ -3,6 +3,42 @@ const { ObjectId } = require("mongodb");
 // list of valid ratings
 const validRatings = ["G", "PG", "PG-13", "R", "NC-17"];
 
+// error codes and messages
+const error = {
+  NOT_FOUND: {
+    status: 404,
+    message: "Not Found",
+  },
+  BAD_REQUEST: {
+    status: 400,
+    message: "Invalid Request Parameter",
+  },
+  INTERNAL_SERVER_ERROR: {
+    status: 500,
+    message: "Internal Server Error",
+  },
+};
+
+Object.freeze(error);
+
+const createErrorObj = (err, message) => {
+  if (!err || !err.status || !err.message) return error.INTERNAL_SERVER_ERROR;
+  return {
+    ...err,
+    message: message ? message : err.message,
+  };
+};
+
+const badRequestErr = (message) => createErrorObj(error.BAD_REQUEST, message);
+const notFoundErr = (message) => createErrorObj(error.NOT_FOUND, message);
+const internalServerErr = (message) =>
+  createErrorObj(error.INTERNAL_SERVER_ERROR, message);
+
+const sendErrResp = (res, { status, message }) =>
+  res
+    .status(status || error.INTERNAL_SERVER_ERROR)
+    .json(message ? { message } : "");
+
 /**
  *
  * @param {string} char
@@ -26,24 +62,31 @@ const isNumberChar = (char) => char >= "0" && char <= "9";
  * @returns str after trimming if it is a valid string input
  */
 const isValidStr = (str, varName, compareOp, compareVal) => {
-  if (!str) throw `You need to provide a ${varName}`;
-  if (typeof str !== "string") throw `${varName} should be of type string`;
+  if (!str) throw badRequestErr(`You need to provide a ${varName}`);
+  if (typeof str !== "string")
+    throw badRequestErr(`${varName} should be of type string`);
   str = str.trim();
   if (str.length === 0)
-    throw `Empty string/string with spaces is not a valid ${varName}`;
+    throw badRequestErr(
+      `Empty string/string with spaces is not a valid ${varName}`
+    );
   if (compareOp && compareVal) {
     switch (compareOp) {
       case "min":
         if (str.length < compareVal)
-          throw `${varName} should be at least ${compareVal} in length`;
+          throw badRequestErr(
+            `${varName} should be at least ${compareVal} in length`
+          );
         break;
       case "max":
         if (str.length > compareVal)
-          throw `${varName} should be at max ${compareVal} in length`;
+          throw badRequestErr(
+            `${varName} should be at max ${compareVal} in length`
+          );
         break;
       case "equal":
         if (str.length !== compareVal)
-          throw `${varName} should be ${compareVal} in length`;
+          throw badRequestErr(`${varName} should be ${compareVal} in length`);
         break;
       default:
         break;
@@ -61,20 +104,22 @@ const isValidStr = (str, varName, compareOp, compareVal) => {
  */
 const isValidArray = (arr, arrName, compareOp, compareVal) => {
   if (typeof arr !== "object" || !Array.isArray(arr))
-    throw `${arrName} should be of type array`;
+    throw badRequestErr(`${arrName} should be of type array`);
   if (compareOp && compareVal) {
     switch (compareOp) {
       case "min":
         if (arr.length < compareVal)
-          throw `${arrName} length should be at least ${compareVal}`;
+          throw badRequestErr(
+            `${arrName} length should be at least ${compareVal}`
+          );
         break;
       case "max":
         if (arr.length > compareVal)
-          throw `${arrName} length cannot be more ${compareVal}`;
+          throw badRequestErr(`${arrName} length cannot be more ${compareVal}`);
         break;
       case "equal":
         if (arr.length !== compareVal)
-          throw `${arrName} length should be ${compareVal}`;
+          throw badRequestErr(`${arrName} length should be ${compareVal}`);
         break;
       default:
         break;
@@ -102,7 +147,7 @@ const isValidMovieTitle = (title) => {
     .split("")
     .forEach((char) => {
       if (!isLetterChar(char) && !isNumberChar(char) && char !== " ") {
-        throw "Provided title is not valid";
+        throw badRequestErr("Provided title is not valid");
       }
     });
   return title;
@@ -116,7 +161,9 @@ const isValidMovieTitle = (title) => {
 const isValidRating = (rating) => {
   rating = isValidStr(rating, "rating");
   if (!validRatings.includes(rating))
-    throw 'Rating should be one of the following: "G", "PG", "PG-13", "R", "NC-17"';
+    throw badRequestErr(
+      'Rating should be one of the following: "G", "PG", "PG-13", "R", "NC-17"'
+    );
   return rating;
 };
 
@@ -132,7 +179,9 @@ const isValidStudio = (studio) => {
     .split("")
     .forEach((char) => {
       if (!isLetterChar(char) && ![" ", ".", "'", "-"].includes(char))
-        throw "The studio name should not consist of numbers or special characters";
+        throw badRequestErr(
+          "The studio name should not consist of numbers or special characters"
+        );
     });
   return studio;
 };
@@ -147,7 +196,7 @@ const isValidStudio = (studio) => {
 const isValidName = (name, varName, allowPunctuations = false) => {
   name = isValidStr(name, varName);
   const split = ([firstName, lastName, ...rest] = name.split(" "));
-  if (split.length > 2) throw `Invalid ${varName} name`;
+  if (split.length > 2) throw badRequestErr(`Invalid ${varName} name`);
   const cleanName = `${isValidStr(
     firstName,
     `${varName} First Name`,
@@ -163,7 +212,9 @@ const isValidName = (name, varName, allowPunctuations = false) => {
         char !== " " &&
         !(allowPunctuations && ["'", ".", "-"].includes(char))
       )
-        throw `The ${varName} name should not consist of numbers or any special characters`;
+        throw badRequestErr(
+          `The ${varName} name should not consist of numbers or any special characters`
+        );
     });
   return cleanName;
 };
@@ -189,7 +240,7 @@ const isValidGenres = (genres) => {
       .split("")
       .forEach((char) => {
         if (!isLetterChar(char) && char !== " ")
-          throw `Genre at index ${index} is not a valid genre`;
+          throw badRequestErr(`Genre at index ${index} is not a valid genre`);
       });
     return genre;
   });
@@ -217,10 +268,11 @@ const isValidCastMembers = (castMembers) => {
 const isValidReleaseDate = (date) => {
   date = isValidStr(date, "Release Date");
   for (char of date)
-    if (!isNumberChar(char) && char !== "/") throw "Invalid release date";
+    if (!isNumberChar(char) && char !== "/")
+      throw badRequestErr("Invalid release date");
   let [month, day, year] = date.split("/");
   if (month.length !== 2 || day.length !== 2 || year.length !== 4)
-    throw "Invalid release date";
+    throw badRequestErr("Invalid release date");
   year = parseInt(year.trim(), 10);
   month = parseInt(month.trim(), 10);
   day = parseInt(day.trim(), 10);
@@ -237,7 +289,7 @@ const isValidReleaseDate = (date) => {
     (month === 2 && day > 28) ||
     ([4, 6, 9, 11].includes(month) && day > 30)
   )
-    throw "Invalid release date";
+    throw badRequestErr("Invalid release date");
   return `${month.toString().padStart(2, "0")}/${day
     .toString()
     .padStart(2, "0")}/${year.toString()}`;
@@ -252,13 +304,15 @@ const isValidRuntime = (runtime) => {
   runtime = isValidStr(runtime, "runtime");
   const split = ([hString, mString, ...rest] = runtime.split(" "));
   if (split.length > 2 || !hString.endsWith("h") || !mString.endsWith("min"))
-    throw "Invalid runtime";
+    throw badRequestErr("Invalid runtime");
   const hSplit = ([hours, ...rest] = hString.split("h"));
   const mSplit = ([mins, ...rest] = mString.split("min"));
   if (hSplit.length > 2 || mSplit > 2 || hSplit[1] !== "" || mSplit[1] !== "")
-    throw "Invalid runtime";
-  for (let char of hours) if (!isNumberChar(char)) throw "Invalid runtime";
-  for (let char of mins) if (!isNumberChar(char)) throw "Invalid runtime";
+    throw badRequestErr("Invalid runtime");
+  for (let char of hours)
+    if (!isNumberChar(char)) throw badRequestErr("Invalid runtime");
+  for (let char of mins)
+    if (!isNumberChar(char)) throw badRequestErr("Invalid runtime");
   hours = parseFloat(hours, 10);
   mins = parseFloat(mins, 10);
   if (
@@ -270,7 +324,7 @@ const isValidRuntime = (runtime) => {
     hours % 1 !== 0 ||
     mins % 1 !== 0
   )
-    throw "Invalid runtime";
+    throw badRequestErr("Invalid runtime");
   return `${hours}h ${mins}min`;
 };
 
@@ -280,7 +334,8 @@ const isValidRuntime = (runtime) => {
  * @returns {object} movie object after trimming wherever needed otherwise throws an error if any of the properties is missing of invalid
  */
 const isValidMovieObject = (obj) => {
-  if (!isValidObj) throw "Movie object provided is not a valid object";
+  if (!isValidObj)
+    throw badRequestErr("Object provided is not a valid movie object");
   let {
     title,
     plot,
@@ -303,9 +358,6 @@ const isValidMovieObject = (obj) => {
   castMembers = isValidCastMembers(castMembers);
   dateReleased = isValidReleaseDate(dateReleased);
   runtime = isValidRuntime(runtime);
-  const objKeys = Object.keys(obj);
-  if (objKeys.length > 11)
-    throw "Object has extra keys. It does not follow the movie schema";
   return {
     title,
     plot,
@@ -328,24 +380,75 @@ const isValidMovieObject = (obj) => {
  */
 const isValidObjectId = (id) => {
   id = isValidStr(id, "Id");
-  if (!ObjectId.isValid(id)) throw "Invalid Object Id";
+  if (!ObjectId.isValid(id)) throw badRequestErr("Invalid Object Id");
   return ObjectId(id);
 };
 
+/**
+ *
+ * @returns {string} current date in the format MM/DD/YYYY
+ */
+const getCurrentDate = () => {
+  const today = new Date();
+  return `${(today.getMonth() + 1).toString().padStart(2, "0")}/${today
+    .getDate()
+    .toString()
+    .padStart(2, "0")}/${today.getFullYear()}`;
+};
+
+/**
+ *
+ * @param {number} rating
+ * @returns {number} rating rounded to one decimal place if it is a valid rating else throws an error
+ */
+const isValidReviewRating = (rating) => {
+  if (typeof rating !== "number" || !isFinite(rating))
+    throw badRequestErr("Review rating should be of type number");
+  if (rating < 1 || rating > 5)
+    throw badRequestErr("Review rating should be between 1 to 5");
+  if ((rating * 10) % 1 > 0)
+    throw badRequestErr("Review rating should have only one decimal place");
+  return parseFloat(rating.toFixed(1));
+};
+
+/**
+ *
+ * @param {Array} reviews
+ * @returns {number} over all rating (avg rating) of all the reviews passed rounded to one decimal place
+ */
+const calcOverallRating = (reviews) => {
+  let sum = 0;
+  reviews.forEach((review) => {
+    sum += review.rating;
+  });
+  const avg = sum / reviews.length;
+  return parseFloat(avg.toFixed(1));
+};
+
+/**
+ *
+ * @param {object} obj
+ * @returns {object} review object after trimming wherever needed otherwise throws an error if any of the properties is missing of invalid
+ */
 const isValidReviewObject = (obj) => {
-  const { reviewTitle, reviewerName, review, rating } = obj;
+  const { reviewTitle, reviewDate, reviewerName, review, rating } = obj;
   return {
     _id: ObjectId(),
-    reviewTitle,
-    reviewerName,
-    review,
-    rating,
+    reviewTitle: isValidStr(reviewTitle, "review title"),
+    reviewDate: reviewDate ? reviewDate : getCurrentDate(),
+    reviewerName: isValidName(reviewerName, "reviewer name", true),
+    review: isValidStr(review, "review"),
+    rating: isValidReviewRating(rating),
   };
 };
 
 module.exports = {
   isValidMovieObject,
   isValidObjectId,
-  isValidMovieTitle,
   isValidReviewObject,
+  calcOverallRating,
+  badRequestErr,
+  notFoundErr,
+  internalServerErr,
+  sendErrResp,
 };

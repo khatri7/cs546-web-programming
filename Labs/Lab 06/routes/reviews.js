@@ -1,6 +1,7 @@
 //require express and express router as shown in lecture code
 const express = require("express");
 const { reviewsData } = require("../data");
+const { sendErrResp } = require("../helpers");
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router
       const reviews = await reviewsData.getAllReviews(req.params.movieId);
       res.json(reviews);
     } catch (e) {
-      res.status(500);
+      sendErrResp(res, e);
     }
   })
   .post(async (req, res) => {
@@ -26,7 +27,7 @@ router
       );
       res.json(movie);
     } catch (e) {
-      res.status(500);
+      sendErrResp(res, e);
     }
   });
 
@@ -37,11 +38,16 @@ router
       const review = await reviewsData.getReview(req.params.reviewId);
       res.json(review);
     } catch (e) {
-      res.status(500).json();
+      sendErrResp(res, e);
     }
   })
   .delete(async (req, res) => {
-    //code here for DELETE
+    try {
+      const movie = await reviewsData.removeReview(req.params.reviewId);
+      res.json(movie);
+    } catch (e) {
+      sendErrResp(res, e);
+    }
   });
 
 module.exports = router;
