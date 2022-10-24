@@ -40,7 +40,10 @@ const createMovie = async (
 const getAllMovies = async () => {
   const moviesCollection = await movies();
   const moviesList = await moviesCollection.find({}).toArray();
-  return moviesList;
+  return moviesList.map(({ _id, title }) => ({
+    _id,
+    title,
+  }));
 };
 
 const getMovieById = async (id) => {

@@ -1,7 +1,11 @@
 //require express and express router as shown in lecture code
 const express = require("express");
 const { reviewsData } = require("../data");
-const { sendErrResp } = require("../helpers");
+const {
+  sendErrResp,
+  isValidObjectId,
+  isValidReviewObject,
+} = require("../helpers");
 
 const router = express.Router();
 
@@ -9,7 +13,8 @@ router
   .route("/:movieId")
   .get(async (req, res) => {
     try {
-      const reviews = await reviewsData.getAllReviews(req.params.movieId);
+      const _id = isValidObjectId(req.params.movieId);
+      const reviews = await reviewsData.getAllReviews(_id.toString());
       res.json(reviews);
     } catch (e) {
       sendErrResp(res, e);
@@ -17,9 +22,12 @@ router
   })
   .post(async (req, res) => {
     try {
-      const { reviewTitle, reviewerName, review, rating } = req.body;
+      const _id = isValidObjectId(req.params.movieId);
+      const { reviewTitle, reviewerName, review, rating } = isValidReviewObject(
+        req.body
+      );
       const movie = await reviewsData.createReview(
-        req.params.movieId,
+        _id.toString(),
         reviewTitle,
         reviewerName,
         review,
@@ -35,7 +43,8 @@ router
   .route("/review/:reviewId")
   .get(async (req, res) => {
     try {
-      const review = await reviewsData.getReview(req.params.reviewId);
+      const _id = isValidObjectId(req.params.reviewId);
+      const review = await reviewsData.getReview(_id.toString());
       res.json(review);
     } catch (e) {
       sendErrResp(res, e);
@@ -43,7 +52,8 @@ router
   })
   .delete(async (req, res) => {
     try {
-      const movie = await reviewsData.removeReview(req.params.reviewId);
+      const _id = isValidObjectId(req.params.reviewId);
+      const movie = await reviewsData.removeReview(_id.toString());
       res.json(movie);
     } catch (e) {
       sendErrResp(res, e);

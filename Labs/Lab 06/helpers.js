@@ -103,6 +103,7 @@ const isValidStr = (str, varName, compareOp, compareVal) => {
  * @param {number} compareVal
  */
 const isValidArray = (arr, arrName, compareOp, compareVal) => {
+  if (!arr) throw badRequestErr(`You need to provide ${arrName}`);
   if (typeof arr !== "object" || !Array.isArray(arr))
     throw badRequestErr(`${arrName} should be of type array`);
   if (compareOp && compareVal) {
@@ -402,12 +403,13 @@ const getCurrentDate = () => {
  * @returns {number} rating rounded to one decimal place if it is a valid rating else throws an error
  */
 const isValidReviewRating = (rating) => {
+  if (!rating) throw badRequestErr("You need to provide a valid rating");
   if (typeof rating !== "number" || !isFinite(rating))
     throw badRequestErr("Review rating should be of type number");
   if (rating < 1 || rating > 5)
     throw badRequestErr("Review rating should be between 1 to 5");
   if ((rating * 10) % 1 > 0)
-    throw badRequestErr("Review rating should have only one decimal place");
+    throw badRequestErr("Review rating can have only one decimal place");
   return parseFloat(rating.toFixed(1));
 };
 
@@ -417,11 +419,12 @@ const isValidReviewRating = (rating) => {
  * @returns {number} over all rating (avg rating) of all the reviews passed rounded to one decimal place
  */
 const calcOverallRating = (reviews) => {
+  if (reviews.length === 0) return 0;
   let sum = 0;
   reviews.forEach((review) => {
     sum += review.rating;
   });
-  const avg = sum / reviews.length;
+  const avg = sum / (reviews.length || 1);
   return parseFloat(avg.toFixed(1));
 };
 
@@ -434,10 +437,10 @@ const isValidReviewObject = (obj) => {
   const { reviewTitle, reviewDate, reviewerName, review, rating } = obj;
   return {
     _id: ObjectId(),
-    reviewTitle: isValidStr(reviewTitle, "review title"),
+    reviewTitle: isValidStr(reviewTitle, "Review title", "min", 2),
     reviewDate: reviewDate ? reviewDate : getCurrentDate(),
-    reviewerName: isValidName(reviewerName, "reviewer name", true),
-    review: isValidStr(review, "review"),
+    reviewerName: isValidName(reviewerName, "Reviewer name", true),
+    review: isValidStr(review, "Review"),
     rating: isValidReviewRating(rating),
   };
 };

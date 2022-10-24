@@ -1,6 +1,10 @@
 const express = require("express");
 const { moviesData } = require("../data");
-const { sendErrResp } = require("../helpers");
+const {
+  sendErrResp,
+  isValidMovieObject,
+  isValidObjectId,
+} = require("../helpers");
 
 const router = express.Router();
 
@@ -26,7 +30,7 @@ router
         castMembers,
         dateReleased,
         runtime,
-      } = req.body;
+      } = isValidMovieObject(req.body);
       const movie = await moviesData.createMovie(
         title,
         plot,
@@ -48,7 +52,8 @@ router
   .route("/:movieId")
   .get(async (req, res) => {
     try {
-      const movie = await moviesData.getMovieById(req.params.movieId);
+      const _id = isValidObjectId(req.params.movieId);
+      const movie = await moviesData.getMovieById(_id.toString());
       res.json(movie);
     } catch (e) {
       sendErrResp(res, e);
@@ -56,7 +61,8 @@ router
   })
   .delete(async (req, res) => {
     try {
-      const response = await moviesData.removeMovie(req.params.movieId);
+      const _id = isValidObjectId(req.params.movieId);
+      const response = await moviesData.removeMovie(_id.toString());
       res.json(response);
     } catch (e) {
       sendErrResp(res, e);
@@ -64,6 +70,7 @@ router
   })
   .put(async (req, res) => {
     try {
+      const _id = isValidObjectId(req.params.movieId);
       const {
         title,
         plot,
@@ -74,9 +81,9 @@ router
         castMembers,
         dateReleased,
         runtime,
-      } = req.body;
+      } = isValidMovieObject(req.body);
       const movie = await moviesData.updateMovie(
-        req.params.movieId,
+        _id.toString(),
         title,
         plot,
         genres,
