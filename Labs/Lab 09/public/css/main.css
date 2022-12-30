@@ -1,0 +1,84 @@
+/*
+You will style your page using at least 10 CSS selectors for general CSS styling. You will place the CSS in its own file. You must style the is-green class to make text have a color of #00E676 and is-red class to make text have a color of #FF3D00.
+*/
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	position: relative;
+	min-height: 100vh;
+}
+
+header,
+main,
+footer {
+	padding: 1rem;
+	box-sizing: border-box;
+}
+
+header {
+	text-align: center;
+}
+
+footer {
+	background-color: rgb(24, 24, 24);
+	color: rgb(237, 237, 237);
+	padding: 2rem 1rem;
+}
+
+#arrayinput {
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	border-width: 2px;
+	width: 20rem;
+}
+
+.arrayform__submitBtn {
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	background-color: transparent;
+	border: 0.1rem solid #1976d2;
+	color: #1976d2;
+	text-transform: uppercase;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.1s ease-in;
+	margin-top: 0.5rem;
+}
+
+.arrayform__submitBtn:hover {
+	background-color: #1976d2;
+	color: white;
+}
+
+.error-input {
+	border: 2px solid #cc0000;
+}
+
+#errortext {
+	color: #cc0000;
+}
+
+footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+#results {
+	padding-left: 1rem;
+	margin-top: 1rem;
+}
+
+.is-red {
+	color: #ff3d00;
+}
+
+.is-green {
+	color: #00e676;
+}

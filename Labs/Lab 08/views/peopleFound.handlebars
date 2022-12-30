@@ -6,24 +6,12 @@ You should have a main element, and inside of the main element have a ul tag tha
 
 You must also provide an a tag that links back to your / route with the text Make another search.
 }}
-<section>
-	<a href="/">Make another search</a>
-	<main>
-		<h1>{{title}}</h1>
-		<h2>{{searchPersonName}}</h2>
-		{{#if peopleFound}}
-			<ul>
-				{{#each people}}
-					<li>
-						<a href="/persondetails/{{id}}">{{id}}
-							{{firstName}}
-							{{lastName}}</a>
-					</li>
-				{{/each}}
-			</ul>
-		{{else}}
-			<p class="not-found">We're sorry, but no results were found for
-				{{searchPersonName}}.</p>
-		{{/if}}
-	</main>
-</section>
+<h1>{{title}}</h1>
+<h2>{{searchPersonName}}</h2>
+<ul class="people-list">
+	{{#each people}}
+		<li>
+			<a href="/persondetails/{{id}}">{{firstName}} {{lastName}}</a>
+		</li>
+	{{/each}}
+</ul>

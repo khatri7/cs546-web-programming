@@ -1,1 +1,98 @@
-/*This file should have CSS rulesets */
+body {
+	background: #fafafa;
+	font-family: Arial, sans-serif;
+	line-height: 1.6;
+}
+
+h1 {
+	color: #5a5a5a;
+}
+
+/* homepage */
+.search-form input {
+	padding: 0.5rem 1rem;
+	border-radius: 10rem;
+	width: 20rem;
+	margin-right: 1rem;
+}
+
+.search-form button {
+	padding: 0.5rem 1rem;
+	border-radius: 10rem;
+	background-color: transparent;
+	border: 0.1rem solid #1976d2;
+	color: #1976d2;
+	text-transform: uppercase;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.1s ease-in;
+}
+
+.search-form button:hover {
+	background-color: #1976d2;
+	color: white;
+}
+
+/* people found page */
+.people-list {
+	list-style-type: none;
+	padding: 0;
+	gap: 1rem;
+}
+
+.people-list a {
+	display: block;
+	width: 20rem;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	margin-bottom: 1rem;
+	box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
+	margin-left: 0.4rem;
+	transition: all 0.1s ease-in;
+}
+
+.people-list a:hover {
+	transform: scale(1.05);
+}
+
+/* error page */
+.error {
+	color: #cc0000;
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+
+.error-image {
+	width: 500px;
+	margin: auto;
+}
+
+/* person found page */
+.person {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	border: 1px solid black;
+	border-radius: 1rem;
+}
+
+.person dt {
+	font-weight: bold;
+	color: #5a5a5a;
+	padding: 0.5rem 0.3rem;
+	border-right: 1px solid black;
+}
+
+.person dd {
+	margin: 0;
+	padding: 0.5rem 0.3rem;
+}
+
+.person dt:not(:last-of-type),
+.person dd:not(:last-of-type) {
+	border-bottom: 1px solid black;
+}
+
+/* person not found page */
+.not-found__search-person-name {
+	font-style: italic;
+}

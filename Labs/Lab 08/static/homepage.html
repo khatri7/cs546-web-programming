@@ -1,27 +1,36 @@
-<!-- 
-This page will be shown when the following route is hit: GET http://localhost:3000/
-This page will be a valid HTML document. 
-The title of the document should be "People Finder". You should have the title set as the <title> element of the HTML document and as an h1 in your document.
-Your page should reference a CSS file, /public/main-styles.css; with at least 10 rulesets that apply to this page; these 10 rules can also apply to elements across all of your pages, or be unique to this page.
-You should have a main element, and inside of the main element have a p element with a brief (2-3 sentence description) of what your website does.
-Also inside the main element, you will have a form; this form will POST to /searchpeople. This form will have an input and a label; the label should properly reference the same id as the input. You should also have a button with a type of submit that submits the form. The input in your form should have a name of searchPersonName.
- -->
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/public/main-styles.css" />
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/public/main-styles.css">
 		<title>People Finder</title>
 	</head>
 	<body>
-		<h1>People Finder</h1>
 		<main>
-			<p>Description of what the application does!!</p>
-			<form method="POST" action="/searchpeople">
+			<h1>People Finder</h1>
+			<p>
+				This is a search application that helps you search for people from
+				<a
+					href="https://gist.githubusercontent.com/robherley/5112d73f5c69a632ef3ae9b7b3073f78/raw/24a7e1453e65a26a8aa12cd0fb266ed9679816aa/people.json"
+					target="_blank"
+					>this dataset</a
+				>
+				by their name. Once you enter a name, it will return the at max 20
+				results of people which contain the search string in either their first
+				name or last name sorted by id in ascending order. There could be more
+				than 20 results in the database, so better to be as specific as
+				possible.
+			</p>
+			<form class="search-form" method="POST" action="/searchpeople">
 				<label for="searchname">
 					Name:
-					<input type="text" name="searchPersonName" id="searchname" placeholder="Name" />
+					<input
+						type="text"
+						name="searchPersonName"
+						id="searchname"
+						placeholder="Name"
+					>
 				</label>
 				<button type="submit">Search</button>
 			</form>

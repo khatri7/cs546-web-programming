@@ -1,17 +1,20 @@
 {
-	"name": "cs-546-lab-8",
+	"name": "cs-546-lab-10",
 	"version": "1.0.0",
-	"description": "Lab 8 for CS546 Web Programming",
+	"description": "Lab 10 for CS546 Web Programming",
 	"main": "app.js",
 	"scripts": {
 		"start": "node app.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
+	"keywords": [],
 	"author": "Abhishek Khatri",
 	"license": "MIT",
 	"dependencies": {
-		"axios": "^1.1.3",
+		"bcrypt": "^5.1.0",
 		"express": "^4.18.2",
-		"express-handlebars": "^6.0.6"
+		"express-handlebars": "^6.0.6",
+		"express-session": "^1.17.3",
+		"mongodb": "^4.12.0"
 	}
 }
