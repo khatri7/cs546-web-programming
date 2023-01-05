@@ -478,7 +478,7 @@ if the `movieId` is not found in the system, you will issue a 404 status code an
 
 You will return the array of reviews (as shown below) with a 200 status code along with the review data if found. Note: the `{....}` is just to show there are more review objects in the array Obviously you should not be returning "`{....}`" literally
 
-```json
+```
 [{ _id: "603d992b919a503b9afb856e", reviewTitle: "Meh...",
 
 reviewDate: "10/13/2022", reviewerName: "Patrick Hill",
