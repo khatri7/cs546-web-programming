@@ -92,7 +92,6 @@ const isValidArraysInput = (inputParam) => {
 				!["", " ", "-", ",", "[", "]"].includes(char) &&
 				!isNumberChar(char)
 			) {
-				console.log("failing here");
 				throw "Invalid Input: Only whole number (including negative and 0) array(s) are allowed.";
 			}
 			return char !== " " && char !== "";
