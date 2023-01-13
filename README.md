@@ -1,4 +1,4 @@
-#CS546 Web Programming I
+# CS546 Web Programming I
 
 This repository contains the assigments for the Web Programming I class at Stevens Institute of Technology.
 
