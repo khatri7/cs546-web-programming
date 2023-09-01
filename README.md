@@ -1,6 +1,6 @@
 # CS546 Web Programming I
 
-This repository contains the assigments for the Web Programming I class at Stevens Institute of Technology.
+This repository contains the assignments for the Web Programming I class at Stevens Institute of Technology.
 
 Click [here](https://github.com/khatri7/cs546-group36-final-project) to check out the final project for this course
 
